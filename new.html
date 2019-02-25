@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TOEFL Spell Checker</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+	<style type="text/css">
+		.main{
+			background: white;
+			width: 60%;
+		    max-width: 1500px;
+		    position: absolute;
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+			border: 1px solid #007bff;
+			border-radius: 0.25rem;
+    		box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.3);
+    		margin-bottom: 0;
+		}
+		
+		.dropdown-menu, .dropdown, .dropdown-item{
+			width: 100%;
+		}
+		.form > div:first-child{
+			float: left;
+			width: 70%;
+		}
+		button{
+			margin-left: 3%;
+		}
+		.wrapper{
+			width: 80%;
+			margin: 0 auto;
+		}
+		.form{
+			width: 100%;
+			margin: auto;
+			margin-bottom: 4%;
+		}
+		.success p{
+			font-size: 17px;
+			display: table-cell;
+			float: left;
+			clear: left;
+		}
+		.success span{
+			display: table-cell;
+			padding-left: 5px;
+			padding-bottom: 16px;
+		}
+		.word{
+			font-size: 18px;
+		}
+		input:focus, button{
+			box-shadow: none !important;
+		}
+		li:hover{
+			cursor: pointer;
+		}
+		.success{
+			display:none;
+		}
+		.fail{
+			display: none;
+		}
+	</style>
+</head>
+<body>
+
+<div class="main jumbotron">
+	<h1 class="display-4">TOEFL Spell-Checker</h1>
+	<p class="lead">This is a Toefl spell checker, created for students preparing for entrance exams to find out meaning and synonyms of words.</p>
+  	<hr class="my-4">
+  	<p>It uses trie data structure for word retrieval and uses one or two edit distance for spell checking.</p>
+
+  	<div class="wrapper">
+		<div class="form">
+			<div>
+				<div class="dropdown">
+				  <input autocomplete="off" type="text" name="word" oninput="keypress()" class="form-control dropdown-toggle" data-toggle="dropdown" placeholder="e.g. Ascetic" aria-haspopup="true" aria-expanded="false">
+
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<div>
+						</div>
+					</ul>
+				</div>
+			</div>
+			<button type="submit" class="btn btn-outline-primary" onclick="submit()">SUBMIT</button>
+		</div>
+		<div class="success">
+			<p style="width:100%;"><i class="word">Word</i></p>
+			<div>
+				<p><i>Meaning : </i></p>
+				<span style="padding-left:4%;"></span>
+			</div>
+			<div>
+				<p><i>Synonyms : </i></p>
+				<span></span>
+			</div>
+		</div>
+		<div class="fail">
+			<p>Sorry, incorrect word!!</p>
+			<p></p>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var	textbox = document.querySelector("input[name=word]"),
+		span = document.querySelector("p span"),
+		ul = document.querySelector(".dropdown-menu"),
+		success = document.querySelector(".success"),
+		fail = document.querySelector(".fail"),
+		meansynArray = document.querySelectorAll('.success div span'),
+		word = document.querySelector('.word'),
+		stringWord;
+
+	function keypress(){
+		stringWord = textbox.value;
+		success.style.display = "none";
+		fail.style.display = "none";
+
+		if(stringWord.length >= 3){
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+		  			
+		  			var res = this.responseText;
+		  			var wordArray = (res).split(/(\s+)/).filter( function(e) { return e.trim().length > 0; } );	
+		  			var noOfSuggestions = 6;
+
+		  			if(noOfSuggestions>wordArray.length){
+		  				noOfSuggestions = wordArray.length;
+		  			}
+
+					while (ul.hasChildNodes()) {
+					    ul.removeChild(ul.lastChild);
+					}
+					
+					for(var i=0; i<noOfSuggestions; i++){
+						var div = document.createElement("div");
+						var li = document.createElement("li");
+						var a = document.createElement("a");
+						
+						a.appendChild(document.createTextNode(wordArray[i]));
+						a.setAttribute("class", "dropdown-item");
+						li.appendChild(a);
+						li.addEventListener("click", function(e){ textbox.value = e.srcElement.innerText; });
+						div.appendChild(li);
+						ul.appendChild(div);
+					}
+				}
+			};
+			xhttp.open("GET", "word="+stringWord, true);
+			xhttp.send();
+		}
+		else{
+			while (ul.hasChildNodes()) {
+			    ul.removeChild(ul.lastChild);
+			}
+		}
+	}
+
+	function submit(){
+		stringWord = textbox.value;
+		if(stringWord.length >= 1){
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					word.innerText = stringWord;
+		  			var jsonString = JSON.parse(this.responseText);
+		  			if(jsonString.status == true){
+		  				success.style.display = "block";
+		  				fail.style.display = "none";
+
+			  			var meanings = jsonString.meanings;
+			  			var synonyms = jsonString.synonyms;
+
+			  			meansynArray[0].innerText = "";
+			  			meansynArray[1].innerText = "";
+
+			  			for(var i = 0; i<meanings.length; i++){
+			  				meansynArray[0].innerText += meanings[i];
+			  				meansynArray[0].innerText += "\n";
+			  			}
+			  			var tempstring = "";
+			  			for(var i = 0; i<synonyms.length; i++){
+			  				tempstring += synonyms[i];
+			  				if(i != (synonyms.length-1))
+			  					tempstring += ", ";
+			  			}
+			  			meansynArray[1].innerText = tempstring;
+			  		}
+			  		else{
+			  			success.style.display = "none";
+		  				fail.style.display = "block";
+
+		  				var synonyms = jsonString.synonyms;
+
+		  				var message = document.querySelectorAll(".fail p")[1];
+		  				message.innerText = "";
+
+		  				for(var i = 0; i<synonyms.length; i++){
+			  				message.innerText += synonyms[i];
+			  			}
+			  		}
+				}
+			};
+			xhttp.open("POST", "word="+stringWord, true);
+			xhttp.send();
+		}
+	}
+</script>
+
+</body>
+</html>
