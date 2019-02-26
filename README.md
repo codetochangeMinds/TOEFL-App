@@ -1,2 +1,4 @@
 # TOEFL-App
-This repo contains the code of the web app made for the students preparing for toefl exam
+
+In this project we developed a web app which usually takes a word and return the meaning and synonyms of the given word. A spell checker utility was added to find the misspelled word and return the most matching word. The backend of the app was developed using C++ and the library json-c while the frontend was developed using the HTML, CSS and Javascript. To connect the frontend and backend we used the concept of socket programming. Wordnet dataset was used for searching the meaning of the word, the dataset was in json format and we read the json format using the library json-c. The app was capable of showing the auto suggestion which we build by storing data in the tree format. The spell checker was build using the edit-distance algorithm, in which we generating the permutation of the input word using oneeditdistance and twoeditdistance strategy and as a result the permutation having more number of counts in the corpus will be returned. 
+
